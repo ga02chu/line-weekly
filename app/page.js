@@ -154,6 +154,17 @@ export default function Home() {
                 <div className={styles.cardLabel}>整週概述</div>
                 <div className={styles.cardContent}>{digest.summary}</div>
               </div>
+{digest.summaryCategories?.map((cat, i) => (
+                <div key={i} className={styles.card}>
+                  <div className={styles.cardLabel}>{cat.category}</div>
+                  <div className={styles.cardContent}>
+                    <ul>{cat.items.map((item, j) => <li key={j}>{item}</li>)}</ul>
+                    <div className={styles.tags}>
+                      {cat.tags?.map((tag, k) => <span key={k} className={styles.tag}>{tag}</span>)}
+                    </div>
+                  </div>
+                </div>
+              ))}
               {digest.decisions?.length > 0 && (
                 <div className={`${styles.card} ${styles.cardFull} ${styles.cardGold}`}>
                   <div className={styles.cardLabel}>重要決議</div>
@@ -167,32 +178,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Section 2: 熱門話題 */}
-          {digest.hotTopics?.length > 0 && (
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <div className={styles.sectionIcon}>②</div>
-                <div className={styles.sectionTitle}>本週熱門話題</div>
-              </div>
-              <div className={styles.topicList}>
-                {digest.hotTopics.map((t, i) => {
-                  const max = Math.max(...digest.hotTopics.map(x => x.count), 1);
-                  return (
-                    <div key={i} className={styles.topicRow}>
-                      <span className={`${styles.topicRank} ${i === 0 ? styles.topicRankTop : ''}`}>{i+1}</span>
-                      <div className={styles.topicBarWrap}>
-                        <div className={styles.topicName}>{t.topic}</div>
-                        <div className={styles.topicBar}>
-                          <div className={styles.topicBarFill} style={{width:`${Math.round(t.count/max*100)}%`}} />
-                        </div>
-                      </div>
-                      <span className={styles.topicLabel}>{t.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+
 
           {/* Section 3: 每日行動摘要 */}
           {digest.dailySummary?.length > 0 && (
