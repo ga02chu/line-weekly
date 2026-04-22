@@ -50,7 +50,12 @@ export async function POST(req) {
     const claudeData = await claudeRes.json();
     const raw = claudeData.content?.find(b => b.type === 'text')?.text || '';
     const clean = raw.replace(/```json|```/g, '').trim();
-    const digest = JSON.parse(clean);
+let digest;
+try {
+  digest = JSON.parse(clean);
+} catch(e) {
+  return Response.json({ error: `AI 回傳格式錯誤，請再試一次（若持續發生請縮短週次範圍）` }, { status: 500 });
+}
 
     return Response.json({ digest, totalRows: weekRows.length });
 
