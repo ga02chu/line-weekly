@@ -431,3 +431,47 @@
   .cardGrid { grid-template-columns: 1fr; }
   .todoColumns { gap: 16px; }
 }
+
+/* Date picker */
+.presets {
+  display: flex;
+  gap: 6px;
+}
+
+.presets button {
+  background: transparent;
+  border: 1px solid #d4c8b8;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #6b5f52;
+  font-family: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.presets button:hover { background: #f5f0e8; border-color: #1a1410; color: #1a1410; }
+
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dateInput {
+  padding: 6px 10px;
+  border: 1px solid #d4c8b8;
+  font-size: 13px;
+  font-family: inherit;
+  background: #faf7f2;
+  color: #1a1410;
+  outline: none;
+  border-radius: 2px;
+}
+
+.dateInput:focus { border-color: #1a1410; }
+
+.dateSep {
+  color: #6b5f52;
+  font-size: 14px;
+}
