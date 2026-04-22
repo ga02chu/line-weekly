@@ -18,13 +18,13 @@ export async function POST(req) {
 
     const weekRows = filterByWeek(rows, weekOffset || 0);
     if (weekRows.length === 0) {
-      return Response.json({ error: '這週找不到對話記錄，請確認日期格式（建議：YYYY/MM/DD HH:mm 或 YYYY-MM-DD HH:mm）' }, { status: 404 });
+      return Response.json({ error: '這週找不到對話記錄，請確認日期格式（YYYY/MM/DD HH:mm 或 YYYY-MM-DD HH:mm）' }, { status: 404 });
     }
 
     const { start, end } = getWeekRange(weekOffset || 0);
     const weekStr = `${formatDate(start)} ~ ${formatDate(end)}`;
-    const convo = weekRows.slice(0, 300).map(r => `[${r[0]}] ${r[1]}：${r[2]}`).join('\n');
-const uniqueDays = new Set(weekRows.map(r => r[0].substring(0, 10))).size;
+    const uniqueDays = new Set(weekRows.map(r => r[0].substring(0, 10))).size;
+    const convo = weekRows.slice(0, 400).map(r => `[${r[0]}] ${r[1]}：${r[2]}`).join('\n');
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -35,10 +35,48 @@ const uniqueDays = new Set(weekRows.map(r => r[0].substring(0, 10))).size;
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1200,
+        max_tokens: 2500,
         messages: [{
           role: 'user',
-          content: `你是一個群組對話分析助手。以下是 LINE 群組在 ${weekStr} 的對話記錄（格式：[時間] 發話者：訊息）：\n\n${convo}\n\n請分析並回傳以下 JSON（只回傳 JSON，不要加其他文字或 markdown）：\n{\n  "stats": {\n    "totalMessages": 數字,\n    "activeMembers": 數字,\n    "totalDays": ${uniqueDays}\n  },\n  "summary": "2-3句話的重點摘要（繁體中文）",\n  "decisions": ["決議1", "決議2"],\n  "actionItems": ["待辦1", "待辦2"],\n  "hotTopics": [\n    {"topic": "話題名稱", "count": 相對熱度1到100, "label": "簡短說明"}\n  ]\n}`
+          content: `你是一個專業的群組對話分析助手。以下是 LINE 工作群組在 ${weekStr} 的對話記錄（格式：[時間] 發話者：訊息）：
+
+${convo}
+
+請仔細分析後，回傳以下 JSON（只回傳 JSON，不要加其他文字或 markdown）：
+{
+  "stats": {
+    "totalMessages": ${weekRows.length},
+    "activeMembers": 數字,
+    "totalDays": ${uniqueDays}
+  },
+  "summary": "2-3句話的整週重點摘要（繁體中文，點出最重要的事）",
+  "decisions": ["重要決議1", "重要決議2"],
+  "dailySummary": [
+    {
+      "date": "4/13（一）",
+      "title": "當天最重要的一件事（5字以內）",
+      "completed": ["完成事項1", "完成事項2"],
+      "inProgress": ["處理中事項1"]
+    }
+  ],
+  "todoItems": [
+    {
+      "priority": "高",
+      "owner": "負責人姓名",
+      "task": "待辦事項",
+      "note": "說明或期限"
+    }
+  ],
+  "hotTopics": [
+    {"topic": "話題名稱", "count": 相對熱度1到100, "label": "簡短說明"}
+  ],
+  "warnings": ["注意事項1", "注意事項2"]
+}
+
+注意：
+- dailySummary 只列有對話的日期，每天的 completed 和 inProgress 各列2-4項重點
+- todoItems 依優先順序排列（高/中/低），owner 填群組中的人名
+- warnings 列出需要特別注意的事項（如截止日期、風險等），沒有可回傳空陣列`
         }]
       })
     });
@@ -51,12 +89,12 @@ const uniqueDays = new Set(weekRows.map(r => r[0].substring(0, 10))).size;
     const claudeData = await claudeRes.json();
     const raw = claudeData.content?.find(b => b.type === 'text')?.text || '';
     const clean = raw.replace(/```json|```/g, '').trim();
-let digest;
-try {
-  digest = JSON.parse(clean);
-} catch(e) {
-  return Response.json({ error: `AI 回傳格式錯誤，請再試一次（若持續發生請縮短週次範圍）` }, { status: 500 });
-}
+    let digest;
+    try {
+      digest = JSON.parse(clean);
+    } catch(e) {
+      return Response.json({ error: 'AI 回傳格式錯誤，請再試一次' }, { status: 500 });
+    }
 
     return Response.json({ digest, totalRows: weekRows.length });
 
