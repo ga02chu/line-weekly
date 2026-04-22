@@ -64,7 +64,6 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      {/* Top config bar */}
       <div className={styles.configBar}>
         <input
           type="text"
@@ -111,7 +110,6 @@ export default function Home() {
       {status === 'done' && digest && (
         <div className={styles.report}>
 
-          {/* Header */}
           <div className={styles.reportHeader}>
             <div>
               <div className={styles.weekBadge}>W{getWeekNum(weekOffset)}</div>
@@ -123,7 +121,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Stats strip */}
           <div className={styles.statsStrip}>
             <div className={styles.statItem}>
               <div className={styles.statNum}>{digest.stats.totalMessages}</div>
@@ -138,12 +135,12 @@ export default function Home() {
               <div className={styles.statLabel}>有對話天數</div>
             </div>
             <div className={styles.statItem}>
-              <div className={styles.statNum}>{digest.hotTopics?.length || 0}</div>
-              <div className={styles.statLabel}>熱門話題數</div>
+              <div className={styles.statNum}>{digest.todoItems?.length || 0}</div>
+              <div className={styles.statLabel}>待辦事項數</div>
             </div>
           </div>
 
-          {/* Section 1: 重點摘要 + 決議 */}
+          {/* Section 1: 重點摘要 */}
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <div className={styles.sectionIcon}>①</div>
@@ -154,13 +151,17 @@ export default function Home() {
                 <div className={styles.cardLabel}>整週概述</div>
                 <div className={styles.cardContent}>{digest.summary}</div>
               </div>
-{digest.summaryCategories?.map((cat, i) => (
+              {digest.summaryCategories?.map((cat, i) => (
                 <div key={i} className={styles.card}>
                   <div className={styles.cardLabel}>{cat.category}</div>
                   <div className={styles.cardContent}>
-                    <ul>{cat.items.map((item, j) => <li key={j}>{item}</li>)}</ul>
+                    <ul>
+                      {cat.items.map((item, j) => <li key={j}>{item}</li>)}
+                    </ul>
                     <div className={styles.tags}>
-                      {cat.tags?.map((tag, k) => <span key={k} className={styles.tag}>{tag}</span>)}
+                      {cat.tags?.map((tag, k) => (
+                        <span key={k} className={styles.tag}>{tag}</span>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -178,13 +179,11 @@ export default function Home() {
             </div>
           </div>
 
-
-
-          {/* Section 3: 每日行動摘要 */}
+          {/* Section 2: 每日行動摘要 */}
           {digest.dailySummary?.length > 0 && (
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
-                <div className={styles.sectionIcon}>③</div>
+                <div className={styles.sectionIcon}>②</div>
                 <div className={styles.sectionTitle}>每日行動摘要</div>
               </div>
               {digest.dailySummary.map((day, i) => (
@@ -213,11 +212,11 @@ export default function Home() {
             </div>
           )}
 
-          {/* Section 4: 待辦清單 */}
+          {/* Section 3: 待辦清單 */}
           {digest.todoItems?.length > 0 && (
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
-                <div className={styles.sectionIcon}>④</div>
+                <div className={styles.sectionIcon}>③</div>
                 <div className={styles.sectionTitle}>待辦清單</div>
               </div>
               <table className={styles.todoTable}>
@@ -243,7 +242,6 @@ export default function Home() {
                   ))}
                 </tbody>
               </table>
-
               {digest.warnings?.length > 0 && (
                 <div className={styles.noteBox}>
                   💡 <strong>注意事項</strong>
@@ -255,7 +253,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* Footer */}
           <div className={styles.footer}>
             <span>工作群組週報 · 自動生成</span>
             <span>{weekLabel(weekOffset)} ｜ W{getWeekNum(weekOffset)}</span>
