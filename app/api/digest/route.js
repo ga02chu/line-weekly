@@ -38,38 +38,48 @@ ${convo}
     "totalDays": ${uniqueDays}
   },
   "summary": "2-3句話的整週重點摘要",
-  "decisions": ["重要決議1", "重要決議2"],
   "summaryCategories": [
     {
       "category": "分類名稱（如：品牌合作、廣告投放、店面系統、外出行程等）",
+      "colorType": "顏色類型，只能填：red/gold/green/default 其中一個",
       "items": ["重點事項1", "重點事項2"],
       "tags": ["關鍵字1", "關鍵字2"]
     }
   ],
+  "dealStatus": {
+    "confirmed": [{"name": "合作名稱", "detail": "金額或說明"}],
+    "pending": [{"name": "合作名稱", "detail": "報價或進度說明"}],
+    "rejected": [{"name": "合作名稱", "detail": "拒絕原因"}],
+    "evaluating": [{"name": "合作名稱", "detail": "評估說明"}]
+  },
   "dailySummary": [
     {
       "date": "4/13（一）",
       "title": "當天最重要的事（5字內）",
-      "completed": ["完成事項1", "完成事項2", "完成事項3"],
+      "completed": ["完成事項1", "完成事項2"],
       "inProgress": ["處理中1", "處理中2"]
     }
   ],
-  "todoItems": [
-    {
-      "priority": "高",
-      "owner": "負責人姓名",
-      "task": "待辦事項",
-      "note": "說明或期限"
-    }
-  ],
+  "todoItems": {
+    "Apple": [
+      {"priority": "高", "task": "待辦事項", "note": "說明或期限"}
+    ],
+    "闆娘": [
+      {"priority": "中", "task": "待辦事項", "note": "說明或期限"}
+    ],
+    "雙方": [
+      {"priority": "低", "task": "待辦事項", "note": "說明或期限"}
+    ]
+  },
   "warnings": ["注意事項1", "注意事項2"]
 }
 
 重要規則：
-- summaryCategories 依對話內容分3-6個主題分類，每類列2-5個重點，tags列出2-4個關鍵字
-- dailySummary 必須列出這週每一天有對話的日期，不能只列第一天
-- todoItems 必須根據對話內容判斷每個待辦是誰負責，不能全部寫同一個人，若雙方都有責任寫「雙方」
-- warnings 列出截止日期、風險提醒等重要注意事項，沒有可回傳空陣列`;
+- summaryCategories 依對話內容分3-6個主題分類，colorType 根據主題性質選擇（red=緊急/業務, gold=財務/合作, green=完成/成功, default=一般）
+- dealStatus 只列有提到的合作案，若某類別沒有就給空陣列
+- dailySummary 必須列出這週每一天有對話的日期，不能只列第一天，每天各列2-4個重點
+- todoItems 必須分別列出 Apple、闆娘、雙方各自的待辦，若某人沒有待辦就給空陣列
+- warnings 列出截止日期、風險提醒等，沒有可回傳空陣列`;
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
