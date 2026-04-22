@@ -89,7 +89,8 @@ function getWeekRange(offset) {
 function filterByWeek(rows, offset) {
   const { start, end } = getWeekRange(offset);
   return rows.filter(row => {
-    const raw = row[0].replace(/\//g, '-');
+    if (!row[0]) return false;
+    const raw = row[0].trim().replace(/\//g, '-');
     const d = new Date(raw);
     return !isNaN(d) && d >= start && d <= end;
   });
