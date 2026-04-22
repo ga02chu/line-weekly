@@ -54,7 +54,7 @@ ${convo}
   },
   "dailySummary": [
     {
-      "date": "4/13（一）",
+      "date": "4/13",
       "title": "當天最重要的事（5字內）",
       "completed": ["完成事項1", "完成事項2"],
       "inProgress": ["處理中1", "處理中2"]
