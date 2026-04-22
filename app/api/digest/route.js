@@ -38,7 +38,7 @@ export async function POST(req) {
         max_tokens: 2500,
         messages: [{
           role: 'user',
-          content: `你是一個專業的群組對話分析助手。以下是 LINE 工作群組在 ${weekStr} 的對話記錄（格式：[時間] 發話者：訊息）：
+          content: `你是一個專業的工作群組對話分析助手。以下是 LINE 工作群組在 ${weekStr} 的對話記錄（格式：[時間] 發話者：訊息）：
 
 ${convo}
 
@@ -49,14 +49,21 @@ ${convo}
     "activeMembers": 數字,
     "totalDays": ${uniqueDays}
   },
-  "summary": "2-3句話的整週重點摘要（繁體中文，點出最重要的事）",
+  "summary": "2-3句話的整週重點摘要",
   "decisions": ["重要決議1", "重要決議2"],
+  "summaryCategories": [
+    {
+      "category": "分類名稱（如：品牌合作、廣告投放、店面系統、外出行程等）",
+      "items": ["重點事項1", "重點事項2"],
+      "tags": ["關鍵字1", "關鍵字2"]
+    }
+  ],
   "dailySummary": [
     {
       "date": "4/13（一）",
-      "title": "當天最重要的一件事（5字以內）",
-      "completed": ["完成事項1", "完成事項2"],
-      "inProgress": ["處理中事項1"]
+      "title": "當天最重要的事（5字內）",
+      "completed": ["完成事項1", "完成事項2", "完成事項3"],
+      "inProgress": ["處理中1", "處理中2"]
     }
   ],
   "todoItems": [
@@ -67,17 +74,14 @@ ${convo}
       "note": "說明或期限"
     }
   ],
-  "hotTopics": [
-    {"topic": "話題名稱", "count": 相對熱度1到100, "label": "簡短說明"}
-  ],
   "warnings": ["注意事項1", "注意事項2"]
 }
 
-注意：
-- dailySummary 只列有對話的日期，每天的 completed 和 inProgress 各列2-4項重點
-- todoItems 依優先順序排列（高/中/低），owner 填群組中的人名
-- warnings 列出需要特別注意的事項（如截止日期、風險等），沒有可回傳空陣列`
-        }]
+重要規則：
+- summaryCategories 依對話內容分3-6個主題分類，每類列2-5個重點，tags列出2-4個關鍵字
+- dailySummary 必須列出這週每一天有對話的日期，不能只列第一天
+- todoItems 必須根據對話內容判斷每個待辦是誰負責，不能全部寫同一個人，若雙方都有責任寫「雙方」
+- warnings 列出截止日期、風險提醒等重要注意事項，沒有可回傳空陣列`
       })
     });
 
