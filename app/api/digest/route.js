@@ -24,6 +24,7 @@ export async function POST(req) {
     const { start, end } = getWeekRange(weekOffset || 0);
     const weekStr = `${formatDate(start)} ~ ${formatDate(end)}`;
     const convo = weekRows.slice(0, 300).map(r => `[${r[0]}] ${r[1]}：${r[2]}`).join('\n');
+const uniqueDays = new Set(weekRows.map(r => r[0].substring(0, 10))).size;
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -37,7 +38,7 @@ export async function POST(req) {
         max_tokens: 1200,
         messages: [{
           role: 'user',
-          content: `你是一個群組對話分析助手。以下是 LINE 群組在 ${weekStr} 的對話記錄（格式：[時間] 發話者：訊息）：\n\n${convo}\n\n請分析並回傳以下 JSON（只回傳 JSON，不要加其他文字或 markdown）：\n{\n  "stats": {\n    "totalMessages": 數字,\n    "activeMembers": 數字,\n    "totalDays": 數字\n  },\n  "summary": "2-3句話的重點摘要（繁體中文）",\n  "decisions": ["決議1", "決議2"],\n  "actionItems": ["待辦1", "待辦2"],\n  "hotTopics": [\n    {"topic": "話題名稱", "count": 相對熱度1到100, "label": "簡短說明"}\n  ]\n}`
+          content: `你是一個群組對話分析助手。以下是 LINE 群組在 ${weekStr} 的對話記錄（格式：[時間] 發話者：訊息）：\n\n${convo}\n\n請分析並回傳以下 JSON（只回傳 JSON，不要加其他文字或 markdown）：\n{\n  "stats": {\n    "totalMessages": 數字,\n    "activeMembers": 數字,\n    "totalDays": ${uniqueDays}\n  },\n  "summary": "2-3句話的重點摘要（繁體中文）",\n  "decisions": ["決議1", "決議2"],\n  "actionItems": ["待辦1", "待辦2"],\n  "hotTopics": [\n    {"topic": "話題名稱", "count": 相對熱度1到100, "label": "簡短說明"}\n  ]\n}`
         }]
       })
     });
