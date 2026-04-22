@@ -257,7 +257,14 @@ export default function Home() {
               </div>
               {digest.dailySummary.map((day, i) => (
                 <div key={i} className={styles.dayBlock}>
-                  <div className={styles.dayLabel}>{day.date}　{day.title}</div>
+                  <div className={styles.dayLabel}>
+  {(() => {
+    const m = day.date.match(/(\d+)\/(\d+)/);
+    if (!m) return day.date;
+    const d = new Date(new Date().getFullYear(), parseInt(m[1])-1, parseInt(m[2]));
+    return `${day.date}（${WEEKDAYS[d.getDay()]}）`;
+  })()}　{day.title}
+</div>
                   <div className={styles.cardGrid}>
                     {day.completed?.length > 0 && (
                       <div className={styles.card}>
